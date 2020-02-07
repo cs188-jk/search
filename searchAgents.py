@@ -493,7 +493,26 @@ class AStarFoodSearchAgent(SearchAgent):
         self.searchType = FoodSearchProblem
 
 def foodHeuristic(state, problem):
+
     """
+    key:
+    o - unvisited food
+    0 - visited food
+    x - pacman
+
+
+    o
+    -
+    o
+    o |- |o | x |- |o
+    -
+    o
+
+
+oneway    3         2
+twoways   6         4
+diff      3         2
+
     Your heuristic for the FoodSearchProblem goes here.
 
     This heuristic must be consistent to ensure correctness.  First, try to come
@@ -525,25 +544,28 @@ def foodHeuristic(state, problem):
 
     totalDistance = 0
 
-    foodLeft = foodGrid.count()
+    # foodLeft = foodGrid.count()
     foodPositions = foodGrid.asList()
+    foodPositions = list(foodPositions)
 
+    for i in range(len(foodPositions)):
+        x, y = foodGrid.asList()[i]
+        if not foodGrid[x][y]:
+            foodPositions.remove((x, y))
 
-    for i in range(foodLeft):
+    for i in range(len(foodPositions)):
         closestPoint = (99999,99999)
         shortestDistance = 9999999
 
         for food in foodPositions:
-            distance = util.manhattanDistance(heuristicPosition, food)
+            distance = mazeDistance(heuristicPosition, food, problem.startingGameState)
             if distance < shortestDistance:
                 closestPoint = food
                 shortestDistance = distance
 
         totalDistance += shortestDistance
         foodPositions.remove(closestPoint)
-        #print('foodLeft = ', len(foodPositions))
         heuristicPosition = closestPoint
-
 
     return totalDistance
 
@@ -576,7 +598,8 @@ class ClosestDotSearchAgent(SearchAgent):
         walls = gameState.getWalls()
         problem = AnyFoodSearchProblem(gameState)
 
-        "*** YOUR CODE HERE ***"
+        return search.ucs(problem)
+
         util.raiseNotDefined()
 
 class AnyFoodSearchProblem(PositionSearchProblem):
@@ -611,8 +634,9 @@ class AnyFoodSearchProblem(PositionSearchProblem):
         complete the problem definition.
         """
         x,y = state
+        foodPositions = self.food.asList()
+        return (x,y) in foodPositions
 
-        "*** YOUR CODE HERE ***"
         util.raiseNotDefined()
 
 def mazeDistance(point1, point2, gameState):
