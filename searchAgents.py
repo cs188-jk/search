@@ -493,26 +493,7 @@ class AStarFoodSearchAgent(SearchAgent):
         self.searchType = FoodSearchProblem
 
 def foodHeuristic(state, problem):
-
     """
-    key:
-    o - unvisited food
-    0 - visited food
-    x - pacman
-
-
-    o
-    -
-    o
-    o |- |o | x |- |o
-    -
-    o
-
-
-oneway    3         2
-twoways   6         4
-diff      3         2
-
     Your heuristic for the FoodSearchProblem goes here.
 
     This heuristic must be consistent to ensure correctness.  First, try to come
@@ -520,7 +501,7 @@ diff      3         2
     consistent as well.
 
     If using A* ever finds a solution that is worse uniform cost search finds,
-    your heuristic is *not* consistent, and probably not admissible!  On the
+    your heuristic is not consistent, and probably not admissible!  On the
     other hand, inadmissible or inconsistent heuristics may find optimal
     solutions, so be careful.
 
@@ -532,7 +513,7 @@ diff      3         2
     problem.  For example, problem.walls gives you a Grid of where the walls
     are.
 
-    If you want to *store* information to be reused in other calls to the
+    If you want to store information to be reused in other calls to the
     heuristic, there is a dictionary called problem.heuristicInfo that you can
     use. For example, if you only want to count the walls once and store that
     value, try: problem.heuristicInfo['wallCount'] = problem.walls.count()
@@ -542,7 +523,6 @@ diff      3         2
 
     heuristicPosition, foodGrid = state
 
-    totalDistance = 0
 
     # foodLeft = foodGrid.count()
     foodPositions = foodGrid.asList()
@@ -553,21 +533,14 @@ diff      3         2
         if not foodGrid[x][y]:
             foodPositions.remove((x, y))
 
-    for i in range(len(foodPositions)):
-        closestPoint = (99999,99999)
-        shortestDistance = 9999999
+    farthestDistance = 0
 
-        for food in foodPositions:
-            distance = mazeDistance(heuristicPosition, food, problem.startingGameState)
-            if distance < shortestDistance:
-                closestPoint = food
-                shortestDistance = distance
+    for food in foodPositions:
+        distance = mazeDistance(heuristicPosition, food, problem.startingGameState)
+        if distance > farthestDistance:
+            farthestDistance = distance
 
-        totalDistance += shortestDistance
-        foodPositions.remove(closestPoint)
-        heuristicPosition = closestPoint
-
-    return totalDistance
+    return farthestDistance
 
 
 class ClosestDotSearchAgent(SearchAgent):
