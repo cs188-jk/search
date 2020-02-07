@@ -320,7 +320,7 @@ class CornersProblem(search.SearchProblem):
         # print('corners: ', self.corners)
         # print('corners reached: ', state[1])
 
-        print('Nodes Expanded: ', self._expanded)
+        # print('Nodes Expanded: ', self._expanded)
         for i in range(len(self.corners)):
             if not state[i+1]:
                 return False
@@ -401,28 +401,26 @@ def cornersHeuristic(state, problem):
 
     EX: find distance from point to closest corner, then distance from closest corner to the clsoest corner to that
     """
-    corners = problem.corners # These are the corner coordinates
-    walls = problem.walls # These are the walls of the maze, as a Grid (game.py)
-
-    cornersLeft = 0
-    corners = list(corners)
+    corners = problem.corners   # This is the list of the corner coordinates
+    corners = list(corners)     # Duplicate list of corners
 
     totalDistance = 0
 
     for i in range(len(corners)):
-        if not state[i+1]:
-            cornersLeft += 1
+        if state[i+1]:
+            corners.remove(problem.corners[i])
 
     heuristicPosition = state[0]
 
-    for i in range(cornersLeft):
+    for i in range(len(corners)):
         closestPoint = (99999,99999)
         shortestDistance = 9999999
 
         for corner in corners:
-            if util.manhattanDistance(heuristicPosition, corner) < shortestDistance:
+            distance = util.manhattanDistance(heuristicPosition, corner)
+            if distance < shortestDistance:
                 closestPoint = corner
-                shortestDistance = util.manhattanDistance(heuristicPosition, corner)
+                shortestDistance = distance
 
         totalDistance += shortestDistance
         corners.remove(closestPoint)
@@ -536,9 +534,10 @@ def foodHeuristic(state, problem):
         shortestDistance = 9999999
 
         for food in foodPositions:
-            if util.manhattanDistance(heuristicPosition, food) < shortestDistance:
+            distance = util.manhattanDistance(heuristicPosition, food)
+            if distance < shortestDistance:
                 closestPoint = food
-                shortestDistance = util.manhattanDistance(heuristicPosition, food)
+                shortestDistance = distance
 
         totalDistance += shortestDistance
         foodPositions.remove(closestPoint)
